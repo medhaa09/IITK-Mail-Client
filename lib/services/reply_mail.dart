@@ -14,27 +14,19 @@ class EmailReply {
     try {
       await client.connectToServer('mmtp.iitk.ac.in', 465, isSecure: true);
       await client.ehlo();
-
       await client.authenticate(username, password, AuthMechanism.plain);
-
-      // final originalPlainText = originalMessage.body ?? '';
-      // final originalHtmlText = originalMessage.body ?? '';
-      final body = originalMessage.body;
-      // final replyText = '\n\nOn ${originalMessage.decodeDate()} ${originalMessage.decodeSender()} wrote:\n\n$originalPlainText';
-      final replyText = '\n\nOn ${originalMessage.receivedDate} ${originalMessage.from} wrote:\n\n$body';
-      final fullReplyBody = '$replyBody\n$replyText';
-
-      final builder = MessageBuilder.prepareMultipartAlternativeMessage(
-        plainText: fullReplyBody,
-        htmlText: "<p>$replyBody</p><blockquote>$body</blockquote>",
+      final builder = MessageBuilder.prepareReplyToMessage(
+        originalMessage as MimeMessage,
+        MailAddress(username, '$username@iitk.ac.in'),
+        replyAll: false,
+        quoteOriginalText: true,
+        replyToSimplifyReferences: true,
       )
-        ..from = [MailAddress(username, '$username@iitk.ac.in')]
-        ..to = [MailAddress('', originalMessage.to)]
-        // ..to = originalMessage.from
-        ..subject = 'Re: ${originalMessage.subject}';
+        ..addText(replyBody)
+        ..from = [MailAddress(username, '$username@iitk.ac.in')];
 
-      final mimeMessage = builder.buildMimeMessage();
-      final sendResponse = await client.sendMessage(mimeMessage);
+      final replyMessage = builder.buildMimeMessage();
+      final sendResponse = await client.sendMessage(replyMessage);
 
       if (sendResponse.isOkStatus) {
         onResult('Reply sent successfully', Colors.green);

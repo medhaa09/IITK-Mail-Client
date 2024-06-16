@@ -17,21 +17,18 @@ class EmailForward {
       await client.ehlo();
 
       await client.authenticate(username, password, AuthMechanism.plain);
+     final forwardSubject = 'Fwd: ${originalMessage.subject }';
 
-      // final originalPlainText = originalMessage.decodeTextPlainPart() ?? '';
-      // final originalHtmlText = originalMessage.decodeTextHtmlPart() ?? '';
-      final originalPlainText = originalMessage.body ?? '';
-      final originalHtmlText = originalMessage.body ?? '';
-      final forwardText = '\n\nForwarded message:\n\n$originalPlainText';
-      final fullForwardBody = '$forwardBody\n$forwardText';
-
-      final builder = MessageBuilder.prepareMultipartAlternativeMessage(
-        plainText: fullForwardBody,
-        htmlText: "<p>$forwardBody</p><blockquote>$originalHtmlText</blockquote>",
-      )
-        ..from = [MailAddress(username, '$username@iitk.ac.in')]
-        ..to = [MailAddress(forwardTo, forwardTo)]
-        ..subject = 'Fwd: ${originalMessage.subject}';
+  final builder = MessageBuilder.prepareForwardMessage(
+        originalMessage as MimeMessage,
+        forwardHeaderTemplate: 'Forwarded message',
+        quoteMessage: true,
+        subjectEncoding: HeaderEncoding.Q,
+        forwardAttachments: true,
+      );
+      
+    builder.subject = forwardSubject;
+      builder.text = forwardBody;
 
       final mimeMessage = builder.buildMimeMessage();
       final sendResponse = await client.sendMessage(mimeMessage);
