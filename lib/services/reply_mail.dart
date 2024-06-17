@@ -1,6 +1,8 @@
 import 'package:enough_mail/enough_mail.dart';
 import 'package:flutter/material.dart';
 import 'package:test_drive/EmailCache/models/email.dart';
+import 'package:test_drive/services/email_fetch.dart';
+import 'package:test_drive/services/save_mails_to_objbox.dart';
 
 class EmailReply {
   static Future<void> replyEmail({
@@ -10,28 +12,27 @@ class EmailReply {
     required String replyBody,
     required Function(String, Color) onResult,
   }) async {
-    final client = SmtpClient('enough_mail', isLogEnabled: true);
+    final client = SmtpClient('enough_mail', isLogEnabled: false);
     try {
       await client.connectToServer('mmtp.iitk.ac.in', 465, isSecure: true);
       await client.ehlo();
 
       await client.authenticate(username, password, AuthMechanism.plain);
+      // logger.i("email $username" );
+      MimeMessage originalMimeMessage =  await  EmailService.fetchMailByUid(
+        uniqueId: int.parse(originalMessage.uniqueId), 
+        username: username, 
+        password: password
+        );
+      // logger.i(originalMimeMessage);
+         final builder = MessageBuilder.prepareReplyToMessage(
+        originalMimeMessage,
+        MailAddress(username, '$username@iitk.ac.in'),
+        quoteOriginalText: true,
+      );
 
-      // final originalPlainText = originalMessage.body ?? '';
-      // final originalHtmlText = originalMessage.body ?? '';
-      final body = originalMessage.body;
-      // final replyText = '\n\nOn ${originalMessage.decodeDate()} ${originalMessage.decodeSender()} wrote:\n\n$originalPlainText';
-      final replyText = '\n\nOn ${originalMessage.receivedDate} ${originalMessage.from} wrote:\n\n$body';
-      final fullReplyBody = '$replyBody\n$replyText';
-
-      final builder = MessageBuilder.prepareMultipartAlternativeMessage(
-        plainText: fullReplyBody,
-        htmlText: "<p>$replyBody</p><blockquote>$body</blockquote>",
-      )
-        ..from = [MailAddress(username, '$username@iitk.ac.in')]
-        ..to = [MailAddress('', originalMessage.to)]
-        // ..to = originalMessage.from
-        ..subject = 'Re: ${originalMessage.subject}';
+      // Add reply body
+      builder.text = replyBody;
 
       final mimeMessage = builder.buildMimeMessage();
       final sendResponse = await client.sendMessage(mimeMessage);

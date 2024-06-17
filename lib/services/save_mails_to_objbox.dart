@@ -36,12 +36,12 @@ Future<void> saveEmailsToDatabase(List<MimeMessage> messages) async {
           subject: message.decodeSubject() ?? 'No Subject',
           body: body,
           receivedDate: message.decodeDate() ?? DateTime.now(),
-          uniqueId: "Soon to add", // Add unique ID logic if needed
+          uniqueId: message.uid.toString(), // Add unique ID logic if needed
         );
 
         // Save Email object to the database
         objectbox.emailBox.put(email);
-        logger.i('Email from ${email.from} to ${email.to} saved successfully.');
+        logger.i('Email from ${email.from} to ${email.to} saved successfully with uid ${email.uniqueId}');
       } catch (e) {
         logger.e('Failed to save email: ${e.toString()}');
       }

@@ -49,7 +49,7 @@ class _ReplyEmailPageState extends State<ReplyEmailPage> {
     });
 
     await EmailReply.replyEmail(
-      username: '${widget.username}@iitk.ac.in',
+      username: widget.username,
       password: widget.password,
       originalMessage: widget.email,
       replyBody: _replyBodyController.text,
