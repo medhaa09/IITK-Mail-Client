@@ -1,3 +1,4 @@
+import 'package:enough_mail/enough_mail.dart';
 import 'package:objectbox/objectbox.dart';
 
 @Entity()
@@ -9,6 +10,7 @@ class Email {
   String body;
   DateTime receivedDate;
   String uniqueId  ;
+  
 
   Email({
     this.id = 0,
@@ -18,5 +20,6 @@ class Email {
     required this.body,
     required this.receivedDate,
     required this.uniqueId ,
+   
   });
 }
