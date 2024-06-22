@@ -49,7 +49,7 @@ class _ReplyEmailPageState extends State<ReplyEmailPage> {
     });
 
     await EmailReply.replyEmail(
-      username: '${widget.username}@iitk.ac.in',
+      username: '${widget.username}',
       password: widget.password,
       originalMessage: widget.email,
       replyBody: _replyBodyController.text,
@@ -83,7 +83,8 @@ class _ReplyEmailPageState extends State<ReplyEmailPage> {
       appBar: AppBar(
         backgroundColor: theme.appBarTheme.backgroundColor,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: theme.appBarTheme.iconTheme?.color),
+          icon:
+              Icon(Icons.arrow_back, color: theme.appBarTheme.iconTheme?.color),
           onPressed: () => Navigator.of(context).pop(),
         ),
         actions: [
@@ -189,7 +190,8 @@ class _ReplyEmailPageState extends State<ReplyEmailPage> {
                     children: [
                       TextField(
                         maxLines: null,
-                        cursorColor: theme.colorScheme.onSurface.withOpacity(0.6),
+                        cursorColor:
+                            theme.colorScheme.onSurface.withOpacity(0.6),
                         controller: _replyBodyController,
                         decoration: const InputDecoration(
                           border: InputBorder.none,
@@ -206,13 +208,17 @@ class _ReplyEmailPageState extends State<ReplyEmailPage> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              _isBodyVisible ? 'Hide Original Message' : 'Show Original Message',
+                              _isBodyVisible
+                                  ? 'Hide Original Message'
+                                  : 'Show Original Message',
                               style: TextStyle(
                                 color: theme.colorScheme.primary,
                               ),
                             ),
                             Icon(
-                              _isBodyVisible ? Icons.expand_less : Icons.expand_more,
+                              _isBodyVisible
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
                               color: theme.colorScheme.primary,
                             ),
                           ],
@@ -230,8 +236,7 @@ class _ReplyEmailPageState extends State<ReplyEmailPage> {
                   ),
                 ),
               ),
-              if (_isLoading)
-                const Center(child: CircularProgressIndicator()),
+              if (_isLoading) const Center(child: CircularProgressIndicator()),
             ],
           ),
         ),
